@@ -180,79 +180,37 @@ function loadAircraftModel() {
 }
 
 function extractEngineMeshes(model) {
-    const leftCandidates = [];
-    const rightCandidates = [];
-    
-    // First pass: name-based detection
+    const left = [];
+    const right = [];
+
     model.traverse((child) => {
         if (child.isMesh) {
-            const name = child.name.toLowerCase();
-            
-            // Check for engine-related names
-            const isEngine = 
-                name.includes('engine') || 
-                name.includes('turbine') || 
-                name.includes('nacelle') ||
-                name.includes('jet') ||
-                name.includes('fan');
-            
-            if (isEngine) {
-                // Determine side
-                if (name.includes('left') || name.includes('_l') || name.includes('l_')) {
-                    leftCandidates.push(child);
-                } else if (name.includes('right') || name.includes('_r') || name.includes('r_')) {
-                    rightCandidates.push(child);
-                } else {
-                    // Use position to determine side
-                    const worldPos = new THREE.Vector3();
-                    child.getWorldPosition(worldPos);
-                    
-                    if (worldPos.x < -0.5) {
-                        leftCandidates.push(child);
-                    } else if (worldPos.x > 0.5) {
-                        rightCandidates.push(child);
-                    }
-                }
+
+            // LEFT ENGINE (pink cylinder under left wing)
+            if (
+                child.name === "Object_12" ||
+                child.name === "Object_13" ||
+                child.name === "Object_14"
+            ) {
+                left.push(child);
+            }
+
+            // RIGHT ENGINE (pink cylinder under right wing)
+            if (
+                child.name === "Object_19" ||
+                child.name === "Object_21" ||
+                child.name === "Object_23"
+            ) {
+                right.push(child);
             }
         }
     });
-    
-    // Second pass: position-based detection if no engines found
-    if (leftCandidates.length === 0 && rightCandidates.length === 0) {
-        console.log('⚠️ No engines detected by name, using position-based detection');
-        
-        model.traverse((child) => {
-            if (child.isMesh) {
-                const worldPos = new THREE.Vector3();
-                child.getWorldPosition(worldPos);
-                
-                // Detect wing-mounted objects (typical engine positions)
-                const isOnWing = Math.abs(worldPos.z) < 3 && Math.abs(worldPos.y) < 2;
-                
-                if (isOnWing) {
-                    if (worldPos.x < -2) {
-                        leftCandidates.push(child);
-                    } else if (worldPos.x > 2) {
-                        rightCandidates.push(child);
-                    }
-                }
-            }
-        });
-    }
-    
-    state.leftEngineMeshes = leftCandidates;
-    state.rightEngineMeshes = rightCandidates;
-    
-    console.log(`🔍 Detected ${leftCandidates.length} left engine meshes`);
-    console.log(`🔍 Detected ${rightCandidates.length} right engine meshes`);
-    
-    // Debug: log engine mesh names
-    if (leftCandidates.length > 0) {
-        console.log('Left engines:', leftCandidates.map(m => m.name));
-    }
-    if (rightCandidates.length > 0) {
-        console.log('Right engines:', rightCandidates.map(m => m.name));
-    }
+
+    state.leftEngineMeshes = left;
+    state.rightEngineMeshes = right;
+
+    console.log("LEFT:", left.map(m => m.name));
+    console.log("RIGHT:", right.map(m => m.name));
 }
 
 function addEngineGlowLights() {
@@ -412,25 +370,34 @@ function updateEngineColors() {
                 mesh.material.userData.isEngineMaterial = true;
             }
             
-            mesh.material.color.copy(leftColor);
-            mesh.material.emissive = leftColor.clone().multiplyScalar(0.2);
-            mesh.material.needsUpdate = true;
+            mesh.material = new THREE.MeshStandardMaterial({
+				color: leftColor,
+				emissive: leftColor,
+				emissiveIntensity: 0.6,
+				metalness: 0.2,
+				roughness: 0.5
+			});
         }
     });
     
     // Apply to right engine meshes
     state.rightEngineMeshes.forEach(mesh => {
-        if (mesh.material) {
-            if (!mesh.material.userData.isEngineMaterial) {
-                mesh.material = mesh.material.clone();
-                mesh.material.userData.isEngineMaterial = true;
-            }
-            
-            mesh.material.color.copy(rightColor);
-            mesh.material.emissive = rightColor.clone().multiplyScalar(0.2);
-            mesh.material.needsUpdate = true;
-        }
-    });
+		if (mesh.material) {
+			if (!mesh.material.userData.isEngineMaterial) {
+				mesh.material = mesh.material.clone();
+				mesh.material.userData.isEngineMaterial = true;
+			}
+	
+			mesh.material = new THREE.MeshStandardMaterial({
+				color: rightColor,
+				emissive: rightColor,
+				emissiveIntensity: 0.6,
+				metalness: 0.2,
+				roughness: 0.5
+			});
+		}
+	});
+   
     
     // Update glow lights
     state.leftEngineLights.forEach(light => {
