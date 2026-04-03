@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Engine Digital Twin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Header - Minimal, Non-blocking -->
+    <div class="top-header">
+        <div class="logo">
+            <div class="logo-icon">✈</div>
+            <div class="logo-text">
+                <h1>Engine Digital Twin</h1>
+                <p>Real-time Health Monitor</p>
+            </div>
+        </div>
+        
+        <div class="header-status">
+            <div class="connection-indicator" id="connection-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Connected</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Side Panel Toggle Button -->
+    <button class="panel-toggle" id="panel-toggle">
+        <span class="toggle-icon">◀</span>
+        <span class="toggle-label">Engine Data</span>
+    </button>
+    
+    <!-- Collapsible Side Panel -->
+    <div class="side-panel" id="side-panel">
+        <div class="panel-header">
+            <h2>Engine Health Data</h2>
+            <button class="panel-close" id="panel-close">✕</button>
+        </div>
+        
+        <div class="panel-content">
+            <!-- Left Engine -->
+            <div class="engine-data" id="left-engine-data">
+                <div class="engine-label">
+                    <span class="engine-icon">◐</span>
+                    <span class="engine-name">Left Engine</span>
+                </div>
+                <div class="health-display">
+                    <div class="health-number" id="left-health-value">100.0%</div>
+                    <div class="health-bar-wrapper">
+                        <div class="health-bar" id="left-health-bar"></div>
+                    </div>
+                    <div class="health-status" id="left-status">OPTIMAL</div>
+                </div>
+            </div>
+            
+            <!-- Right Engine -->
+            <div class="engine-data" id="right-engine-data">
+                <div class="engine-label">
+                    <span class="engine-icon">◑</span>
+                    <span class="engine-name">Right Engine</span>
+                </div>
+                <div class="health-display">
+                    <div class="health-number" id="right-health-value">100.0%</div>
+                    <div class="health-bar-wrapper">
+                        <div class="health-bar" id="right-health-bar"></div>
+                    </div>
+                    <div class="health-status" id="right-status">OPTIMAL</div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="panel-controls">
+                <button class="reset-btn" id="reset-btn">
+                    <span class="btn-icon">↻</span>
+                    <span class="btn-text">Reset Simulation</span>
+                </button>
+            </div>
+            
+            <!-- Info -->
+            <div class="panel-info">
+                <div class="info-item">
+                    <span class="info-icon">🔄</span>
+                    <span class="info-text">Live updates every second</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">🎯</span>
+                    <span class="info-text">Drag to rotate • Scroll to zoom</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Three.js Canvas Container (Full Screen, No Blocking) -->
+    <div id="canvas-container"></div>
+    
+    <!-- Import Map for Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+    
+    <!-- Main Script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
